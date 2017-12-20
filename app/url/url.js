@@ -13,7 +13,7 @@ const validUrl = require('valid-url');
  * @returns {object}
  */
 async function getUrl(query, fieldProjection) {
-  let source = await UrlModel.findOne({ active: true, ...query }, fieldProjection);
+  let source = await UrlModel.findOne({...query }, fieldProjection);
   return source;
 }
 
@@ -129,6 +129,18 @@ async function shorten(url) {
   let previousURL = await getUrl({url:url});
   
   if(previousURL != null){
+
+    // activating if necessary
+    if(!previousURL.active){
+      previousURL.active = true;
+
+      try{
+        await previousURL.save();
+        } catch(e){
+          throw new Error(`An ERROR ocurred while activating the existing shortened url. ${e.message}`);
+        }
+    }
+
     return {
       url,
       shorten: `${SERVER}/${previousURL.hash}`,
@@ -161,8 +173,11 @@ async function shorten(url) {
     active: true
   });
 
+  try{
   const saved = await shortUrl.save();
-  // TODO: Handle save errors
+  } catch(e){
+    throw new Error(`An ERROR ocurred while saving the new shortened url. ${e.message}`);
+  }
 
   return {
     url,

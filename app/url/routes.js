@@ -4,7 +4,7 @@ const visit = require('../visit/visit');
 
 router.get('/:hash', async (req, res, next) => {
   // Querying only the desired fields
-  const source = await url.getUrl({hash:req.params.hash},{_id:0, url:1});
+  const source = await url.getUrl({active: true, hash:req.params.hash},{_id:0, url:1});
   
   if(source != null){
     // Register visit
