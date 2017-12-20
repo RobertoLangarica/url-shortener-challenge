@@ -205,3 +205,21 @@ describe('DELETION:', function(){
         });
     });
 });
+
+describe('VISITS:', function(){
+    describe('#Consuming the visits from a shortened url',function(){
+        it('Should receive a visitsCount and an array of visits', function(done){
+            axios.get(`http://localhost:3000/${hashForTest}/visits`)
+            .then(response=>{
+                if(response.data.visits && response.data.visitsCount){
+                    done();
+                } else {
+                    done(new Error(`The data expected wasn't received.`));
+                }
+            })
+            .catch(e=>{
+                done(e);
+            });
+        });
+    });
+});
