@@ -54,10 +54,18 @@ router.post('/', async (req, res, next) => {
 
 
 router.delete('/:hash/remove/:removeToken', async (req, res, next) => {
-  // TODO: Remove shortened URL if the remove token and the hash match
-  let notImplemented = new Error('Not Implemented');
-  notImplemented.status = 501;
-  next(notImplemented);
+  //Remove shortened URL if the remove token and the hash match
+  let result = await url.deactivateURL(req.params.hash, req.params.removeToken)
+
+  if(result.success){
+    res.json(result);
+    res.end();
+  } else {
+    // an error ocurred
+    let error = new Error(result.message);
+    error.status = 500; //internal error
+    next(error);
+  }
 });
 
 module.exports = router;

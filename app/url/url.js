@@ -175,6 +175,39 @@ async function shorten(url) {
 }
 
 /**
+ * Deactivate the url that matches the hash and removeToken, 
+ * it is only marked with active:false
+ * @param {string} hash 
+ * @param {string} removeToken 
+ */
+async function deactivateURL(hash, removeToken){
+  try{
+    //let result = await UrlModel.findOneandupdate({hash:hash, removeToken: removeToken},{$set: {active:false}}, {new:true, fields:{active:1}});
+    let update = await UrlModel.update({hash:hash, removeToken: removeToken},{$set: {active:false}}, {multi:false, upsert:false});
+    
+    let result = {};
+    if(update.ok){
+      result.success = true;
+
+      if(update.n){
+        // the url with the hash and removeToken exist in the database
+        result.message = 'URL succesfully deactivated.';
+      } else {
+        // no matching url
+        result.message = 'There is no matching URL for the provided hash and removeToken.'
+      }
+    } else {
+      throw new Error('A problem ocurred while trying to update the URL document on the DB.');
+    }
+  
+    return result;
+  }
+  catch(e){
+    return {success: false, message:e.message}
+  }
+}
+
+/**
  * Validate URI
  * @param {any} url
  * @returns {boolean}
@@ -189,5 +222,6 @@ module.exports = {
   generateHash,
   generateRemoveToken,
   isValid,
-  convertUUIDToDecimal
+  convertUUIDToDecimal,
+  deactivateURL
 }
