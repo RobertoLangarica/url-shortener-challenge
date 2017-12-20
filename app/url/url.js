@@ -12,8 +12,8 @@ const validUrl = require('valid-url');
  * @param {string} query any json object for the query for example a hash to lookup by hash{"hash":"value"}
  * @returns {object}
  */
-async function getUrl(query) {
-  let source = await UrlModel.findOne({ active: true, ...query });
+async function getUrl(query, fieldProjection) {
+  let source = await UrlModel.findOne({ active: true, ...query }, fieldProjection);
   return source;
 }
 

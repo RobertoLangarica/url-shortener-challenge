@@ -2,11 +2,10 @@ const router = require('express').Router();
 const url = require('./url');
 
 router.get('/:hash', async (req, res, next) => {
-  const source = await url.getUrl({hash:req.params.hash});
+  // Querying only the desired fields
+  const source = await url.getUrl({hash:req.params.hash},{_id:0, url:1});
 
   // TODO: Respond accordingly when the hash wasn't found (404 maybe?)
-
-  // TODO: Hide fields that shouldn't be public
 
   // TODO: Register visit
 
@@ -30,7 +29,10 @@ router.get('/:hash', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
 
-  // TODO: Validate 'req.body.url' presence
+  //Validate 'req.body.url' presence
+  if(!req.body.url){
+
+  }
 
   try {
     let shortUrl = await url.shorten(req.body.url);
