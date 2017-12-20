@@ -1,29 +1,34 @@
 const router = require('express').Router();
 const url = require('./url');
+const visit = require('../visit/visit');
 
 router.get('/:hash', async (req, res, next) => {
   // Querying only the desired fields
   const source = await url.getUrl({hash:req.params.hash},{_id:0, url:1});
+  
+  if(source != null){
+    // Register visit
+    visit.registerVisit(source.url, req.params.hash);
 
-  // TODO: Respond accordingly when the hash wasn't found (404 maybe?)
+    // Behave based on the requested format using the 'Accept' header.
+    // If header is not provided or is */* redirect instead.
+    const accepts = req.get('Accept');
 
-  // TODO: Register visit
-
-
-  // Behave based on the requested format using the 'Accept' header.
-  // If header is not provided or is */* redirect instead.
-  const accepts = req.get('Accept');
-
-  switch (accepts) {
-    case 'text/plain':
-      res.end(source.url);
-      break;
-    case 'application/json':
-      res.json(source);
-      break;
-    default:
-      res.redirect(source.url);
-      break;
+    switch (accepts) {
+      case 'text/plain':
+        res.end(source.url);
+        break;
+      case 'application/json':
+        res.json(source);
+        break;
+      default:
+        res.redirect(source.url);
+        break;
+    }
+  } else {
+    //Responding with a 404 when the hash wasn't found
+    res.status(404);
+    next();
   }
 });
 
