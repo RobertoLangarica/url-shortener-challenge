@@ -32,6 +32,21 @@ router.get('/:hash', async (req, res, next) => {
   }
 });
 
+router.get('/:hash/visits', async (req, res, next) => {
+  // Querying for the visits
+  const result = await url.getURLVisits(req.params.hash);
+  
+  if(result.success){
+    res.json({visitsCount:result.data.length, visits:result.data});
+    res.end();
+  } else {
+    //Error while retrieving the visits
+    let e = new Error(result.message)
+    e.status = 500; //internal error
+    next(e);
+  }
+});
+
 router.post('/', async (req, res, next) => {
 
   //Validate 'req.body.url' presence

@@ -3,6 +3,7 @@ const { domain } = require('../../environment');
 const SERVER = `${domain.protocol}://${domain.host}`;
 
 const UrlModel = require('./schema');
+const VisitModel = require('../visit/schema');
 const parseUrl = require('url').parse;
 const validUrl = require('valid-url');
 
@@ -227,6 +228,21 @@ async function deactivateURL(hash, removeToken){
 }
 
 /**
+ * Query the visits for an existing hash
+ * @param {string} hash 
+ */
+async function getURLVisits(hash){
+  
+  try{
+  let visitsData = await VisitModel.find({hash},{url:1,createdAt:1,_id:0});
+  return({success:true, data:visitsData});
+  }
+  catch(e){
+    return({success:false, message: `An ERROR ocurred while trying to retrieve the visits. ${e.message}`});
+  }
+}
+
+/**
  * Validate URI
  * @param {any} url
  * @returns {boolean}
@@ -242,5 +258,6 @@ module.exports = {
   generateRemoveToken,
   isValid,
   convertUUIDToDecimal,
-  deactivateURL
+  deactivateURL,
+  getURLVisits
 }
