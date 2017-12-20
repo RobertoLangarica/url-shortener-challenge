@@ -122,7 +122,10 @@ function generateRemoveToken() {
 async function shorten(url) {
 
   if (!isValid(url)) {
-    throw new Error(`Invalid URL`);
+    const e = new Error();
+    e.status = 400; // bad request
+    e.message = `Invalid URL`;
+    throw e;
   }
 
   //Avoid duplications
@@ -203,12 +206,13 @@ async function deactivateURL(hash, removeToken){
     let result = {};
     if(update.ok){
       result.success = true;
-
       if(update.n){
         // the url with the hash and removeToken exist in the database
+        result.removed = true;
         result.message = 'URL succesfully deactivated.';
       } else {
         // no matching url
+        result.removed = false;
         result.message = 'There is no matching URL for the provided hash and removeToken.'
       }
     } else {
