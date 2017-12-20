@@ -36,7 +36,11 @@ router.post('/', async (req, res, next) => {
 
   //Validate 'req.body.url' presence
   if(!req.body.url){
-
+    const e = new Error();
+    e.status = 400; // bad request
+    e.message = `An ERROR ocurred: It is necessary to provide an 'url' field to be shortened.`;
+    next(e);
+    return;
   }
 
   try {
